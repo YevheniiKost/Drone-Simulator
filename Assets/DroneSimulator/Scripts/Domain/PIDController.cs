@@ -12,6 +12,8 @@ namespace DroneSimulator.Domain
         private float _previousError;
         private bool _isFirstCompute = true;
 
+        public PidLastCompute LastCompute { get; private set; }
+
         public PIDController(
             float proportionalGain,
             float integralGain,
@@ -51,7 +53,9 @@ namespace DroneSimulator.Domain
             _isFirstCompute = false;
             _previousError = error;
 
-            return proportionalOutput + integralOutput + derivativeOutput;
+            float total = proportionalOutput + integralOutput + derivativeOutput;
+            LastCompute = new PidLastCompute(proportionalOutput, integralOutput, derivativeOutput, total);
+            return total;
         }
 
         public void Reset()
@@ -59,6 +63,7 @@ namespace DroneSimulator.Domain
             _isFirstCompute = true;
             _previousError = 0f;
             _accumulatedError = 0f;
+            LastCompute = default;
         }
     }
 }

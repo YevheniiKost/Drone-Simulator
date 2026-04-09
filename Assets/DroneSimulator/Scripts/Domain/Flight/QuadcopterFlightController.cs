@@ -3,6 +3,7 @@ using UnityEngine;
 using DroneSimulator.Data.Config;
 using DroneSimulator.Data.Input;
 using DroneSimulator.Data.Sensors;
+using DroneSimulator.Domain;
 
 namespace DroneSimulator.Domain.Flight
 {
@@ -16,8 +17,11 @@ namespace DroneSimulator.Domain.Flight
         private readonly PIDController _yawPid;
 
         private float _currentThrottle;
+        private FlightPidDebugTelemetry _lastPidDebug;
 
         public float CurrentThrottle => _currentThrottle;
+
+        public FlightPidDebugTelemetry LastPidDebug => _lastPidDebug;
 
         public QuadcopterFlightController(DronePhysicsConfig physicsConfig, DronePidConfig pidConfig)
         {
@@ -71,6 +75,26 @@ namespace DroneSimulator.Domain.Flight
             float yawSteer = inputState.Yaw * _physicsConfig.MaxTorque * _currentThrottle;
             float yawDamping = _yawPid.Compute(sensorData.YawAngularVelocity) * _currentThrottle;
             output.YawTorque = yawSteer - yawDamping;
+
+            float yawOmegaDegS = sensorData.YawAngularVelocity * Mathf.Rad2Deg;
+
+            _lastPidDebug = new FlightPidDebugTelemetry(
+                FlightPidDebugMode.StabilisedAngle,
+                sensorData.PitchAngle,
+                sensorData.RollAngle,
+                sensorData.PitchAngularVelocity,
+                sensorData.RollAngularVelocity,
+                yawOmegaDegS,
+                sensorData.PitchAngle,
+                sensorData.RollAngle,
+                yawOmegaDegS,
+                _pitchPid.LastCompute,
+                _rollPid.LastCompute,
+                _yawPid.LastCompute,
+                pitchCorrection,
+                rollCorrection,
+                output.YawTorque,
+                yawSteer);
 
             return output;
         }

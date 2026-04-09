@@ -6,5 +6,8 @@ namespace DroneSimulator.Domain.Flight
     public interface IFlightController
     {
         DroneMotorOutput ComputeMotorOutput(DroneSensorData sensorData, DroneInputState inputState);
+
+        FlightPidDebugTelemetry LastPidDebug { get; }
     }
 }
+

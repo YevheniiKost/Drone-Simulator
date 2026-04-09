@@ -3,6 +3,7 @@ using UnityEngine;
 using DroneSimulator.Data.Config;
 using DroneSimulator.Data.Input;
 using DroneSimulator.Data.Sensors;
+using DroneSimulator.Domain;
 
 namespace DroneSimulator.Domain.Flight
 {
@@ -14,6 +15,10 @@ namespace DroneSimulator.Domain.Flight
         private readonly PIDController _pitchRatePid;
         private readonly PIDController _rollRatePid;
         private readonly PIDController _yawRatePid;
+
+        private FlightPidDebugTelemetry _lastPidDebug;
+
+        public FlightPidDebugTelemetry LastPidDebug => _lastPidDebug;
 
         public AcroFlightController(DronePhysicsConfig physicsConfig, DroneAcroConfig acroConfig)
         {
@@ -46,6 +51,33 @@ namespace DroneSimulator.Domain.Flight
             float pitchCorrection = ComputePitchRateCorrection(inputState.Pitch, sensorData.PitchAngularVelocity);
             float rollCorrection = ComputeRollRateCorrection(inputState.Roll, sensorData.RollAngularVelocity);
             float yawCorrection = ComputeYawRateCorrection(inputState.Yaw, sensorData.YawAngularVelocity);
+
+            float desiredPitchRate = inputState.Pitch * _acroConfig.MaxPitchRate;
+            float desiredRollRate = inputState.Roll * _acroConfig.MaxRollRate;
+            float desiredYawRate = inputState.Yaw * _acroConfig.MaxYawRate;
+            float yawRateActualDegS = sensorData.YawAngularVelocity * Mathf.Rad2Deg;
+
+            float pitchRateError = desiredPitchRate - sensorData.PitchAngularVelocity;
+            float rollRateError = desiredRollRate - sensorData.RollAngularVelocity;
+            float yawRateError = desiredYawRate - yawRateActualDegS;
+
+            _lastPidDebug = new FlightPidDebugTelemetry(
+                FlightPidDebugMode.AcroRate,
+                sensorData.PitchAngle,
+                sensorData.RollAngle,
+                sensorData.PitchAngularVelocity,
+                sensorData.RollAngularVelocity,
+                yawRateActualDegS,
+                pitchRateError,
+                rollRateError,
+                yawRateError,
+                _pitchRatePid.LastCompute,
+                _rollRatePid.LastCompute,
+                _yawRatePid.LastCompute,
+                pitchCorrection,
+                rollCorrection,
+                yawCorrection * _physicsConfig.MaxTorque,
+                0f);
 
             DroneMotorOutput output = new DroneMotorOutput();
 

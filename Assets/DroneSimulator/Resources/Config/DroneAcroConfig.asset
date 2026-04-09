@@ -15,7 +15,7 @@ MonoBehaviour:
   MaxPitchRate: 1000
   MaxRollRate: 1000
   MaxYawRate: 150
-  PitchRateGains: {x: 0.1, y: 0, z: 0}
-  RollRateGains: {x: 0.1, y: 0, z: 0}
+  PitchRateGains: {x: 0.1, y: 0.08, z: 0}
+  RollRateGains: {x: 0.1, y: 0.08, z: 0}
   YawRateGains: {x: 0.05, y: 0, z: 0}
-  RateErrorSumMax: 1
+  RateErrorSumMax: 2

@@ -9,5 +9,7 @@ namespace DroneSimulator.Presentation.UI
         void SetSpeedText(string text);
 
         void SetInputState(DroneInputState state);
+
+        void SetPidDebugText(string text);
     }
 }

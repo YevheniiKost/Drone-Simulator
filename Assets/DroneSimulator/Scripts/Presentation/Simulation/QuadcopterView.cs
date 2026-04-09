@@ -117,7 +117,11 @@ namespace DroneSimulator.Presentation.Simulation
                 return;
             }
 
-            DroneRealtimeData data = new DroneRealtimeData(sensorData.Height, sensorData.Speed, inputState);
+            DroneRealtimeData data = new DroneRealtimeData(
+                sensorData.Height,
+                sensorData.Speed,
+                inputState,
+                _flightController.LastPidDebug);
             _simulationModel.UpdateDroneRealtimeData(data);
         }
 

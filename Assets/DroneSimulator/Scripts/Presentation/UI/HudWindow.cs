@@ -17,6 +17,9 @@ namespace DroneSimulator.Presentation.UI
         [SerializeField]
         private InputValuesPanel _inputValuesPanel;
 
+        [SerializeField]
+        private TextMeshProUGUI _pidDebugText;
+
         public override WindowType WindowType => WindowType.HUD;
 
         public void SetHeightText(string text)
@@ -32,6 +35,16 @@ namespace DroneSimulator.Presentation.UI
         public void SetInputState(DroneInputState state)
         {
             _inputValuesPanel.UpdateInputValues(state);
+        }
+
+        public void SetPidDebugText(string text)
+        {
+            if (_pidDebugText == null)
+            {
+                return;
+            }
+
+            _pidDebugText.text = text;
         }
 
         protected override void OnShow()
