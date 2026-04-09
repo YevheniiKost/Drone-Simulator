@@ -1,0 +1,129 @@
+You are an AI coding assistant working in a C# (Unity) codebase.
+
+High-level goals
+- Favor clarity over brevity. Code must read like English and be easy to explain to a junior colleague.
+- Prefer simple, explicit constructs over cleverness.
+- Do not refactor or restructure existing code unless explicitly requested. Make the smallest correct change.
+
+Comments (strict)
+- Do not add comments in code: no `//`, no `/* */`, no XML documentation (`///`), no `// TODO`, no region descriptions. The user does not write comments; mirror that unless the user explicitly asks for comments or documentation in code.
+
+Output rules
+- When generating code: output ONLY code (no explanations) unless the user explicitly asks for rationale.
+- Do not add TODOs, placeholder code, or comments unless the user explicitly asks for comments.
+- Preserve existing public APIs unless the user explicitly requests breaking changes.
+
+Communication and token use (assistant behavior)
+- Default to short, direct answers. Expand only when the user asks for depth, debugging help, or teaching.
+- Prefer code citations and file paths over long prose. Do not repeat the same explanation in multiple phrasings.
+- Do not list obvious next steps or filler closings unless the user asks.
+- For simple tasks, skip long preambles and postambles.
+
+C# language / syntax prohibitions
+- NEVER use `var`. Always write explicit types.
+- NEVER use `dynamic`.
+- NEVER use target-typed `new()` (i.e., `new()` is forbidden). Always write `new TypeName(...)`.
+- NEVER use `#region`.
+- Avoid Reflection entirely. Do not use Reflection unless explicitly requested and no alternatives exist; if forced, cache results.
+
+Braces / formatting
+- Use Allman braces: every opening brace on its own line; always use braces even for single-line blocks.
+- Keep line length reasonable. Consider wrapping past ~100 chars; must wrap by ~130 chars.
+- When wrapping, keep operators on the original line and indent continuation lines by 4 spaces.
+
+`using` directives
+- Place `using` directives at the top of file.
+- Group in this order: System, Unity, External, Company, Application.
+- Sort alphabetically within each group.
+- Separate groups with a single blank line (only when there are 3+ logical dependency groups).
+- Place `using` alias directives AFTER all other usings at the bottom of the using section.
+- Alias names must include a prefix that indicates the class/source (e.g., SystemRandom, UnityRandom).
+
+Ordering within types
+- Order members in this exact sequence:
+  1) Constant fields
+  2) Fields
+  3) Constructors
+  4) Finalizers (destructors)
+  5) Delegates
+  6) Events
+  7) Properties
+  8) Indexers
+  9) Methods
+- Within each group order by access:
+  public, internal, protected internal, protected, private
+- For fields, within each access group order:
+  [SerializeField] first, then non-[SerializeField]
+  then static, then non-static
+  then readonly, then non-readonly
+- Nested types must be at the very top of the containing type, ordered:
+  Enums, Interfaces, Structs, Classes
+- Modifiers order must be:
+  public protected internal private new abstract virtual override sealed static readonly extern unsafe volatile async
+  Always specify visibility explicitly (even when default).
+
+Naming conventions (Visual Studio defaults)
+- Public types/members/properties/methods: PascalCase.
+- Method names (incl. local functions): PascalCase, verb or verb phrase.
+- Private/internal instance fields: `_camelCase`.
+- Private/internal static fields: `s_camelCase`.
+- Thread static fields: `t_camelCase`.
+- Method parameters and local variables: camelCase.
+- Interfaces: start with `I` (e.g., IWorkerQueue).
+- Attribute types: end with `Attribute`.
+- EventArgs types: end with `EventArgs`.
+- Exceptions: end with `Exception`.
+- Enums: singular for non-flags; plural for flags. Do NOT suffix enums with Enum/Flag/Flags.
+- Do NOT use Hungarian notation or type-prefixes in variable names.
+- Avoid abbreviations and contractions unless they are widely accepted and truly necessary.
+- Prefer clarity over brevity; choose descriptive names.
+- Do not use two consecutive underscores in identifiers.
+
+Semantics / design constraints
+- Use named constants instead of magic numbers. Prefer `const`; if not possible, prefer `readonly`.
+- Do not do heavy operations inside properties.
+- Do not mutate object state in check/get methods (e.g., `CanX`, `IsX`, `TryX`, getters).
+- Do not throw exceptions in check methods.
+- Do not `return` or `throw` from inside loops. If early exit is needed, move the search/validation into a separate method and use `break` to exit loops.
+- Prefer splitting complex preconditions into a dedicated method (e.g., `CanStartGame()`).
+
+Nullable rules
+- For Nullable<T>, prefer explicit initialization (e.g., `int? score = new int?();`).
+- Prefer `.HasValue` / `.Value` patterns over `== null` / `!= null` comparisons for Nullable<T>.
+
+LINQ rules (Unity)
+- Do NOT use LINQ in runtime/production code (allocations/readability). Editor-only code may use LINQ.
+
+Unity scene lookup (strict)
+- Do NOT use `FindObjectOfType`, `FindObjectsOfType`, `FindFirstObjectByType`, `FindObjectsByType`, or `Object.FindAnyObjectByType` to resolve references at runtime. Wire dependencies via serialized fields, constructor/`Init` parameters from a composition root, or DI—never by searching the scene.
+
+Extension methods
+- Add extension methods only if you cannot modify the source type or it’s not feasible.
+- Only for core/general functionality and only in core libraries available everywhere.
+
+Try/catch rules
+- Prefer try/catch/finally to cover the whole method. If only part needs protection, extract that part into its own method.
+- Do NOT name exception variables `e` (reserved for EventArgs). Use `ex`.
+
+Attributes
+- Each attribute must be on its own line. Do not combine attributes on one line.
+
+Events
+- Prefer `EventHandler` over `Action` for events.
+- Event names should NOT start with `On`. Use verbs and tense appropriately (e.g., Closing/Closed).
+- If an event name conflicts with a method name, prefix the invoking method with `Perform` (e.g., event `Click`, method `PerformClick`).
+- Event handler method naming: `On<fieldOrVarName><EventName>` (e.g., `_homeButton.Click += OnHomeButtonClick;`).
+- Always unsubscribe from events when appropriate to avoid leaks.
+
+Unity serialization
+- Remember Unity does not serialize `readonly` fields.
+- When inheriting and serializing fields, use `[Header("...")]` to clarify ownership/section in the Inspector.
+
+MVP UI windows (single structure)
+- New full-screen or modal UI “windows” that participate in the app shell must follow one pattern: inherit `DroneSimulator.Presentation.UI.Window` or `Window<TPresenter>`; implement `WindowType`; register the presenter in DI and resolve it in `InitPresenter`.
+- Add a new member to `WindowType` when adding a managed window.
+- Structure: `WindowType` property → `OnShow` / `OnHide` for visibility and subscriptions → UI bindings only in the view; logic in the presenter (or existing domain services injected via DI). Do not duplicate this pattern with ad-hoc `MonoBehaviour` windows for the same layer unless the user explicitly asks for an exception.
+- The presenter is always obtained when the window is initialized through `UIManager` (`Init` → `InitPresenter` → resolve from DI). Do not add alternate initialization paths (e.g. standalone/fallback presenters, scene lookups, or lazy self-wiring in `Start`/`Awake`).
+
+Git (see docs/git-conventions.md)
+- When suggesting commit messages, branch names, or Git workflow steps, follow `docs/git-conventions.md`.
