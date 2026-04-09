@@ -1,0 +1,18 @@
+{
+    "name": "DroneSimulator.Presentation.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f4e2d3c4b5a697887766554433221100"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

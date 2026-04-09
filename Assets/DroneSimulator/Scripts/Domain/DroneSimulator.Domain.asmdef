@@ -1,0 +1,16 @@
+{
+    "name": "DroneSimulator.Domain",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f3e2d3c4b5a697887766554433221100"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

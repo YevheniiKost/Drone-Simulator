@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32778f8de2af46c38777b865ed336eb2, type: 3}
   m_Name: DronePIDConfig
   m_EditorClassIdentifier: Assembly-CSharp::DroneSimulator.Config.DronePidConfig
-  PitchGains: {x: 0, y: 0, z: 0}
-  RollGains: {x: 0, y: 0, z: 0}
-  YawGains: {x: 0, y: 0, z: 0}
+  PitchGains: {x: 0.12, y: 0.12, z: 0.005}
+  RollGains: {x: 0.12, y: 0.12, z: 0.004}
+  YawGains: {x: 0.25, y: 0.08, z: 0}
   ErrorSumMax: 1

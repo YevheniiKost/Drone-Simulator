@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b34374409c74169ac67a34e3b7b73ec, type: 3}
   m_Name: DronePhysicsConfig
   m_EditorClassIdentifier: Assembly-CSharp::DroneSimulator.Config.DronePhysicsConfig
-  MaxPropellerForce: 4
-  MaxTorque: 0.02
-  MoveFactor: 5
-  ThrottleMax: 3
+  MaxPropellerForce: 6
+  MaxTorque: 1
+  MoveFactor: 2.5
+  ThrottleMax: 5
   ThrottleStep: 0.05
+  IdleThrottle: 1
+  ThrottleDecayStep: 0.05
   WindForce: 0
   WindDirection: 0
